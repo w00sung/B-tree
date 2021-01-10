@@ -34,6 +34,8 @@ void insertNode(Node** root, int data) {
         // root는 나다
         // root에 주소를 넣는 행위다.
         *root = newNode;
+
+
     }
 
     // 빈트리 아니면?
