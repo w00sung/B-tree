@@ -183,6 +183,7 @@ void deleteTree(Node** root_address, Node* root, int k)
 				printf("종료 %d 가 왼쪽으로 옮겨짐\n", root->Key[i]);
 
 			}
+			// 너는 루트 변환 필요없어
 			root->N--;
 		}
 		//NO -> 더 들어가야함
@@ -360,8 +361,9 @@ void deleteTree(Node** root_address, Node* root, int k)
 						int num_Left = Target_Left->N;
 						//mergeNode(Left, Target);
 						// Target = Left
-						Target_Left->Key[num_Left] = root->Key[goal_idx];
+						Target_Left->Key[num_Left] = root->Key[goal_idx-1];
 
+						// 왼쪽에 오른쪽 친구들을 붙여줄거야
 						for (int i = 0; i < Target->N; i++)
 						{
 							Target_Left->Key[(num_Left + 1) + i] = Target->Key[i];
@@ -372,6 +374,13 @@ void deleteTree(Node** root_address, Node* root, int k)
 						}
 						Target_Left->N = MAX_DEGREE;
 						root->N--;
+						// root 가 빈다면? 
+						if (root->N == 0)
+						{
+							printf("root 가 바뀝니다.\n");
+							*root_address = Target_Left;
+						}
+
 						free(Target);
 
 						Target = Target_Left;
@@ -410,6 +419,12 @@ void deleteTree(Node** root_address, Node* root, int k)
 							root->C[i + 1] = root->C[i + 2];
 						}
 						root->N--;
+						if (root->N == 0)
+						{
+							printf("root 가 바뀝니다.\n");
+							*root_address = Target;
+						}
+
 						// 오류 가능성 있음.
 						// 동적할당을 직접한게 아니라, 동적할당된 주소를 받아서 free를 시켜준것.
 						free(Target_Right);
@@ -420,6 +435,8 @@ void deleteTree(Node** root_address, Node* root, int k)
 					}
 				}
 			}
+
+
 			deleteTree(&Target, Target, k);
 
 
