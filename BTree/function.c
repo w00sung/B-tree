@@ -9,7 +9,7 @@
 // 차수가 짝수가 들어간다고 가정
 #define DEGREE 4
 
-int MIN_DEGREE = (int)((DEGREE+1) / 2);
+int MIN_DEGREE = (int)((DEGREE + 1) / 2);
 int MAX_DEGREE = DEGREE - 1;
 
 Node* createNode()
@@ -147,7 +147,7 @@ void insertNonfull(Node* root, int k)
 	}
 }
 
-void deleteTree(Node** root_address,Node* root, int k)
+void deleteTree(Node** root_address, Node* root, int k)
 {
 	int idx = (root->N) - 1;
 
@@ -168,6 +168,7 @@ void deleteTree(Node** root_address,Node* root, int k)
 	// 너 나냐?
 	if (root->Key[goal_idx] == k)
 	{
+		//너 리프야 ?
 		//YES
 		if (root->isLeaf)
 		{
@@ -175,7 +176,7 @@ void deleteTree(Node** root_address,Node* root, int k)
 			// 땡기기
 			for (int i = goal_idx; i < (root->N) - 1; i++)
 			{
-				printf("시작 %d <- %d\n", root->Key[i], root->Key[i+1]);
+				printf("시작 %d <- %d\n", root->Key[i], root->Key[i + 1]);
 
 				root->Key[i] = root->Key[i + 1];
 
@@ -184,6 +185,7 @@ void deleteTree(Node** root_address,Node* root, int k)
 			}
 			root->N--;
 		}
+		//NO -> 더 들어가야함
 		else
 		{
 			Node* Left = root->C[goal_idx];
@@ -196,7 +198,7 @@ void deleteTree(Node** root_address,Node* root, int k)
 			{
 				int tmp = Left->Key[num_left - 1];
 				printf("재귀 delete 출발 LEFT, %d\n", tmp);
-				deleteTree(&Left,Left, tmp);
+				deleteTree(&Left, Left, tmp);
 				printf("재귀 delete 끝 LEFT, %d\n", tmp);
 				root->Key[goal_idx] = tmp;
 
@@ -208,11 +210,12 @@ void deleteTree(Node** root_address,Node* root, int k)
 				//int num_right = Right->N;
 				int tmp = Right->Key[0];
 				printf("재귀 delete 출발 Right, %d\n", tmp);
-				deleteTree(&Right,Right, tmp);
+				deleteTree(&Right, Right, tmp);
 				printf("재귀 delete 끝 Right, %d\n", tmp);
 				root->Key[goal_idx] = tmp;
 			}
 
+			// 자식 합치기
 			else
 			{
 
@@ -256,7 +259,7 @@ void deleteTree(Node** root_address,Node* root, int k)
 				// 재귀 삭제
 				printf("둘다 t-1, 왼쪽에 k(==%d) 넣고 재귀 삭제 시작!\n", Left->Key[num_left]);
 
-				deleteTree(&Left,Left, k);
+				deleteTree(&Left, Left, k);
 				printf("둘다 t-1, 왼쪽에 k 넣고 재귀 삭제 완료해서 그 자리에 %d로 대체됨\n", Left->Key[num_left]);
 
 			}
@@ -275,18 +278,152 @@ void deleteTree(Node** root_address,Node* root, int k)
 		else
 		{
 			Node* Target = root->C[goal_idx];
-			int num_Target= Target->N;
+			int num_Target = Target->N;
 
-			// 내가 내려갈 곳을 본다.
-			if (Target->N >= MIN_DEGREE)
+			// 내려갈 곳이 MIN_DEGREE야 (불안정해 ) -> 안정하게 만들거야
+			if (Target->N < MIN_DEGREE)
 			{
-				//문제 없이, 
-				deleteTree(&Target, Target, k);
+				int right_idx = goal_idx + 1;
+				int left_idx = goal_idx - 1;
+				// merge (merge_target , 나)
+				// merge (나 , merge_target)
+
+				// 오른쪽형제 먼저 보고 (RIGHT 선언은 이때 조건 검사 후 block 안에서 < bc : idx error)
+				if (goal_idx != root->N && root->C[goal_idx + 1]->N >= MIN_DEGREE)
+				{
+					// 빌려오기
+					Node* Target_Right = root->C[goal_idx + 1];
+
+					// 값 내리기
+					Target->Key[num_Target] = root->Key[goal_idx];
+
+					//포인터 옮겨오기
+					Target->C[num_Target + 1] = Target_Right->C[0];
+					Target->N++;
+
+					//노드 키 값 바꾸기
+					root->Key[goal_idx] = Target_Right->Key[0];
+					
+					//형제 키 땡기기,
+					//형제 포인터 땡기기
+
+					for (int i = 0; i < (Target_Right->N)-1; i++)
+					{
+						Target_Right->Key[i] = Target_Right->Key[i + 1];
+
+					}
+					for (int i = 0; i < (Target_Right->N); i++)
+					{
+						Target_Right->C[i] = Target_Right->C[i + 1];
+					}
+					Target_Right->N--;
+				}
+				// 왼쪽 형제 볼게
+				else if (goal_idx != 0 && root->C[goal_idx - 1]->N >= MIN_DEGREE)
+				{
+					// 빌려오기
+
+					Node* Target_Left = root->C[goal_idx - 1];
+					int num_Left = Target_Left->N;
+
+					// 타겟 밀어놓기
+					for (int i = Target->N; i > 0  ; i--)
+					{
+						Target->Key[i] = Target->Key[i-1];
+					}
+					// 값 내리기
+					Target->Key[0] = root->Key[goal_idx-1];
+
+					// 포인터 밀어놓기
+					for (int i = Target->N + 1; i > 0; i--)
+					{
+						Target->C[i] = Target->C[i - 1];
+					}
+					Target->C[0] = Target_Left->C[num_Left];
+					Target->N++;
+
+					root->Key[goal_idx - 1] = Target_Left->Key[num_Left - 1];
+					
+					Target_Left->N--;
+					
+
+				}
+
+				// 내 형제가 다 작아
+				else
+				{
+					//내가 끝에 서 있어서, 나는 왼쪽하고만 합쳐야돼
+					if (goal_idx == root->N)
+					{
+						// merge_left
+						Node* Target_Left = root->C[goal_idx - 1];
+						int num_Left = Target_Left->N;
+						//mergeNode(Left, Target);
+						// Target = Left
+						Target_Left->Key[num_Left] = root->Key[goal_idx];
+
+						for (int i = 0; i < Target->N; i++)
+						{
+							Target_Left->Key[(num_Left + 1) + i] = Target->Key[i];
+						}
+						for (int i = 0; i <= Target->N; i++)
+						{
+							Target_Left->C[(num_Left + 1) + i] = Target->C[i];
+						}
+						Target_Left->N = MAX_DEGREE;
+						root->N--;
+						free(Target);
+
+						Target = Target_Left;
+					}
+					else
+					{
+						// merge_right
+						// 오른쪽 형제라 합쳐
+						Node* Target_Right = root->C[right_idx];
+						// 부모 값 채워 넣기
+						
+
+						//mergeNode(Target, Right);
+						Target->Key[num_Target] = root->Key[goal_idx];
+
+						for (int i = 0; i < Target_Right->N; i++)
+						{
+							// 왼쪽자식에 오른쪽 자식 키 넣기
+							Target->Key[(num_Target + 1) + i] = Target_Right->Key[i];
+
+						}
+						if (!(Target->isLeaf)) 
+{
+							for (int i = 0; i <= Target_Right->N; i++)
+							{
+								// 왼쪽 자식의 Child에 오른쪽 자식의 Child 넣기
+								Target->C[(num_Target + 1) + i] = Target_Right->C[i];
+
+							}
+						}
+						Target->N = MAX_DEGREE;
+
+						for (int i = goal_idx; i < (root->N)-1 ; i++)
+						{
+							root->Key[i] = root->Key[i + 1];
+							root->C[i + 1] = root->C[i + 2];
+						}
+						root->N--;
+						// 오류 가능성 있음.
+						// 동적할당을 직접한게 아니라, 동적할당된 주소를 받아서 free를 시켜준것.
+						free(Target_Right);
+						
+
+
+
+					}
+				}
 			}
-			else
-			{
-				// 오른쪽 형
-			}
+			deleteTree(&Target, Target, k);
+
+
+			// 왼쪽 보고 (LEFT 선언은 이때 조건 검사 후 block 안에서)
 		}
 	}
 }
