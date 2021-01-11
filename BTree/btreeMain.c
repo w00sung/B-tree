@@ -104,17 +104,37 @@ int main()
 	//printf("10 : %d\n", root->C[0]->C[0]->Key[0]);
 	//printf("300 : %d\n", root->C[0]->C[0]->Key[1]);
 
-	deleteTree(&root, root, 900);
+	
+	deleteTree(&root, root, 10);
 	printf("400 : %d\n", root->Key[0]);
 	printf("500 : %d\n", root->Key[1]);
 	printf("700 : %d\n", root->Key[2]);
-	printf("10 : %d\n", root->C[0]->Key[0]);
-	printf("300 : %d\n", root->C[0]->Key[1]);
+	printf("300 : %d\n", root->C[0]->Key[0]);
 	printf("450 : %d\n", root->C[1]->Key[0]);
 	printf("600 : %d\n", root->C[2]->Key[0]);
-	printf("900 : %d\n", root->C[3]->Key[0]);
+	printf("800 : %d\n", root->C[3]->Key[0]);
+	printf("900 : %d\n", root->C[3]->Key[1]);
+
+	//deleteTree(&root, root, 900);
+	//printf("400 : %d\n", root->Key[0]);
+	//printf("500 : %d\n", root->Key[1]);
+	//printf("700 : %d\n", root->Key[2]);
+	//printf("10 : %d\n", root->C[0]->Key[0]);
+	//printf("300 : %d\n", root->C[0]->Key[1]);
+	//printf("450 : %d\n", root->C[1]->Key[0]);
+	//printf("600 : %d\n", root->C[2]->Key[0]);
+	//printf("900 : %d\n", root->C[3]->Key[0]);
 
 
+	deleteTree(&root, root, 450);
+	//printf("400 : %d\n", root->Key[0]);
+	//printf("700 : %d\n", root->Key[1]);
+
+	//printf("300 : %d\n", root->C[0]->Key[0]);
+	//printf("500 : %d\n", root->C[1]->Key[0]);
+	//printf("600 : %d\n", root->C[1]->Key[1]);
+	//printf("800 : %d\n", root->C[2]->Key[0]);
+	//printf("900 : %d\n", root->C[2]->Key[1]);
 
 
 	return 0;
