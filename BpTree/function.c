@@ -122,25 +122,9 @@ void splitChild(Node* parent, int idx, int k)
 	if (parent->isLeaf)
 	{
 
-		//k를 어디다 놓을지 확인하고, (left)밀고, 삽입하고, split
-		int k_insert_idx = (left->N) ;
-		while (k_insert_idx >= 0 && left->Key[k_insert_idx] > k)
-		{
-			k_insert_idx--;
-		}
-		for (int i = (left->N)-1; i >= k_insert_idx; i--)
-		{
-			// k를 넣어줄 수 있게, 값 밀어주기
-			left->Key[i + 1] = left->Key[i];
-			left->C[i + 2] = left->C[i+1];
-		}
-
-		/// 삽입 완료
-		left->Key[k_insert_idx] = k;
-		int up_idx = (left->N + 1) / 2;
 
 		// 오른쪽에 왼쪽의 뒷값들을 넣어주고
-		for (int i = 0; i < MIN_DEGREE; i++)
+		for (int i = 0; i < MIN_DEGREE-1; i++)
 		{
 			// 왼쪽이 뚱뚱해짐
 			right->Key[i] = left->Key[i + MIN_DEGREE];
@@ -155,7 +139,7 @@ void splitChild(Node* parent, int idx, int k)
 		right->N = MIN_DEGREE - 1;
 		right->C[right->N] = left->C[left->N];
 
-		left->N = MIN_DEGREE - 1;
+		left->N = MIN_DEGREE;
 		left->C[left->N] = right;
 		
 
