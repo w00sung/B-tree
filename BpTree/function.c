@@ -75,6 +75,40 @@ void insertTree(Node** root, int k)
 }
 
 
+void insertNonfull(Node* root, int k)
+{
+	int num = (root->N) - 1;
+	if (root->isLeaf)
+	{
+		while ((num >= 0) && (k < root->Key[num]))
+		{
+			root->Key[num + 1] = root->Key[num];
+			num--;
+		}
+		root->Key[num + 1] = k;
+		root->N = (root->N) + 1;
+	}
+	else
+	{
+		while ((num >= 0) && (k < root->Key[num]))
+		{
+			num--;
+		}
+		// 내가 들어갈 공간 위에 서있어
+		num++;
+
+		// 내가 들어갈 자녀들이 가득 찼으면
+		if (root->C[num]->N == MAX_DEGREE)
+		{
+			splitChild(root, num,k);
+			// split 후 root에 값이 추가되니까 내가 어디로 들어갈 지 다시 확인
+			if (k > root->Key[num])
+				num++;
+		}
+		insertNonfull(root->C[num], k);
+	}
+}
+
 void splitChild(Node* parent, int idx, int k)
 {
 
@@ -87,6 +121,7 @@ void splitChild(Node* parent, int idx, int k)
 	// 리프일때, 부모한테 복사해서 올려줌 (copy up)
 	if (parent->isLeaf)
 	{
+
 		//k를 어디다 놓을지 확인하고, (left)밀고, 삽입하고, split
 		int k_insert_idx = (left->N) ;
 		while (k_insert_idx >= 0 && left->Key[k_insert_idx] > k)
@@ -140,12 +175,8 @@ void splitChild(Node* parent, int idx, int k)
 			parent->Key[i + 1] = parent->Key[i];
 		}
 		// 부모에 키 삽입
-		parent->Key[idx] = left->Key[MIN_DEGREE - 1];
+		parent->Key[idx] = right->Key[0];
 		parent->N++;
-
-
-
-		//left->C[k_insert_idx] = k;
 		
 	}
 
@@ -186,3 +217,4 @@ void splitChild(Node* parent, int idx, int k)
 	}
 
 }
+
