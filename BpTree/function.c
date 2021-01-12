@@ -5,7 +5,7 @@
 
 #include "bptree.h"
 
-#define DEGREE 4
+#define DEGREE 6
 
 int MIN_DEGREE = (int)((DEGREE + 1) / 2);
 int MAX_DEGREE = DEGREE - 1;
@@ -118,8 +118,8 @@ void splitChild(Node* parent, int idx)
 	//******************개수 설정해줘야함************************
 	//right->N = MIN_DEGREE - 1;
 
-	// 리프일때, 부모한테 복사해서 올려줌 (copy up)
-	if (parent->isLeaf)
+	// 찢을 놈이 리프일때, 부모한테 복사해서 올려줌 (copy up)
+	if (left->isLeaf)
 	{
 
 
@@ -165,7 +165,7 @@ void splitChild(Node* parent, int idx)
 	}
 
 	//리프가 아니면, (B TREE 와 동일 )
-	else 
+	else
 	{
 		// 오른쪽에 왼쪽의 뒷값들을 넣어주고
 		for (int i = 0; i < MIN_DEGREE - 1; i++)
@@ -202,3 +202,28 @@ void splitChild(Node* parent, int idx)
 
 }
 
+void printAll(Node* root, int depth)
+{
+	printf("\n");
+	Node* node = root;
+	if (node->isLeaf) {
+		for (int i = 0; i < depth; i++) {
+			printf("\t\t\t||");
+		}
+		for (int vIdx = 0; vIdx < node->N; vIdx++) {
+			printf("%6d", node->Key[vIdx]);
+		}
+		return;
+	}
+	if (!node->isLeaf) {
+		for (int i = 0; i < depth; i++) {
+			printf("\t\t\t||");
+		}
+		for (int vIdx = 0; vIdx < node->N; vIdx++) {
+			printf("%4d", node->Key[vIdx]);
+		}
+		for (int vIdx = 0; vIdx < node->N + 1; vIdx++) {
+			printAll(node->C[vIdx], depth + 1);
+		}
+	}
+}
