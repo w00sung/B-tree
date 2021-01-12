@@ -77,39 +77,39 @@ void insertTree(Node** root, int k)
 
 void insertNonfull(Node* root, int k)
 {
-	int num = (root->N) - 1;
+	int idx = (root->N)-1;
 	if (root->isLeaf)
 	{
-		while ((num >= 0) && (k < root->Key[num]))
+		while ((idx >= 0) && (k < root->Key[idx]))
 		{
-			root->Key[num + 1] = root->Key[num];
-			num--;
+			root->Key[idx + 1] = root->Key[idx];
+			idx--;
 		}
-		root->Key[num + 1] = k;
+		root->Key[idx + 1] = k;
 		root->N = (root->N) + 1;
 	}
 	else
 	{
-		while ((num >= 0) && (k < root->Key[num]))
+		while ((idx >= 0) && (k < root->Key[idx]))
 		{
-			num--;
+			idx--;
 		}
 		// 내가 들어갈 공간 위에 서있어
-		num++;
+		idx++;
 
 		// 내가 들어갈 자녀들이 가득 찼으면
-		if (root->C[num]->N == MAX_DEGREE)
+		if (root->C[idx]->N == MAX_DEGREE)
 		{
-			splitChild(root, num,k);
+			splitChild(root, idx);
 			// split 후 root에 값이 추가되니까 내가 어디로 들어갈 지 다시 확인
-			if (k > root->Key[num])
-				num++;
+			if (k > root->Key[idx])
+				idx++;
 		}
-		insertNonfull(root->C[num], k);
+		insertNonfull(root->C[idx], k);
 	}
 }
 
-void splitChild(Node* parent, int idx, int k)
+void splitChild(Node* parent, int idx)
 {
 
 	Node* right = createNode();
