@@ -27,7 +27,7 @@ Node* createNode()
 int searchNode(Node* root, int k)
 {
 	int idx = (root->N);
-	while (idx >= 0 && root->Key[idx] > k)
+	while (idx > 0 && root->Key[idx-1] > k)
 	{
 		idx--;
 	}
@@ -36,7 +36,8 @@ int searchNode(Node* root, int k)
 		idx--;
 
 	// 찾았으면? - 리프가 아닐 때만, N에 서있을 수 있다.
-	if ((idx < root->N) && (k = root->Key[idx]))
+	// 리프에서만 찾을 수 있다.
+	if ((idx < root->N) && (k == root->Key[idx]))
 	{
 		return 1;
 	}
@@ -56,21 +57,30 @@ int searchNode(Node* root, int k)
 
 void insertTree(Node** root, int k)
 {
-	Node* tmp = *root;
-	if (((*root)->N == MAX_DEGREE))
+
+	int isIn = searchNode(*root, k);
+	if (isIn == 0)
 	{
-		// 루트가 될 노드 생성
-		Node* to_be_root = createNode();
-		*root = to_be_root;
-		to_be_root->isLeaf = false;
-		to_be_root->N = 0;
-		to_be_root->C[0] = tmp;
-		splitChild(to_be_root, 0, k);
-		insertNonfull(to_be_root, k);
+		Node* tmp = *root;
+		if (((*root)->N == MAX_DEGREE))
+		{
+			// 루트가 될 노드 생성
+			Node* to_be_root = createNode();
+			*root = to_be_root;
+			to_be_root->isLeaf = false;
+			to_be_root->N = 0;
+			to_be_root->C[0] = tmp;
+			splitChild(to_be_root, 0, k);
+			insertNonfull(to_be_root, k);
+		}
+		else
+		{
+			insertNonfull(*root, k);
+		}
 	}
 	else
 	{
-		insertNonfull(*root, k);
+		printf("The key is alredy in the Tree\n");
 	}
 }
 
@@ -225,5 +235,109 @@ void printAll(Node* root, int depth)
 		for (int vIdx = 0; vIdx < node->N + 1; vIdx++) {
 			printAll(node->C[vIdx], depth + 1);
 		}
+	}
+}
+
+void deleteTree(Node** root, int k)
+{
+	int isIn = searchNode(*root, k);
+	// 안에 없을 때만 삭제 시작
+	if (isIn) 
+	{
+		int idx = (*root)->N;
+
+		// 나보다 다 크면, 0에 서게 됨
+		// 내가 제일 크면 N에 서있음
+		while (idx > 0 & (*root)->Key[idx-1] > k)
+		{
+			idx--;
+		}
+
+		const int goal_idx = idx;
+
+		// 들어온 너 리프야?
+		if ((*root)->isLeaf)
+		{
+			// 나는 Key[goal_idx - 1]이다.
+			for (int i = goal_idx-1; i < ((*root)->N)-1; i++)
+			{
+				(*root)->Key[i] = (*root)->Key[i + 1];
+			}
+			(*root)->N--;
+		}
+		// 리프아니야 ( == 나 더 들어갈 수 있어 !!)
+		else
+		{
+			Node* Target = (*root)->C[goal_idx];
+			if (Target->N < MIN_DEGREE)
+			{
+				// 자식이 안뚱뚱한데, 리프야
+				if (Target->isLeaf)
+				{	
+					// 오른쪽 끝에 서있으면, 무조건 왼쪽 형제가 형제다.
+					if (goal_idx == (*root)->N)
+					{
+						Node* Sibling = (*root)->C[goal_idx - 1];
+
+					}
+
+					// 그 외에는, 무조건 오른쪽 형제가 형제다.
+					else
+					{
+						Node* Sibling = (*root)->C[goal_idx + 1];
+						// 형제 뚱뚱해 ? -> 빌려올거야
+						if (Sibling->N >= MIN_DEGREE)
+						{
+							Target->Key[Target->N] = (*root)->Key[goal_idx];
+							Target->N++;
+							// 끝 Child 에 Sibling 연결시켜준다.
+							Target->C[(Target->N)] = Sibling ;
+								
+							// 형제의 키 값 당긴다.
+							for (int i = 0; i < (Sibling->N)-1; i++)
+							{
+								Sibling->Key[i] = Sibling->Key[i + 1];
+							
+							}
+							Sibling->N--;
+							(*root)->Key[goal_idx] = Sibling->Key[0];
+						}
+						// 형제도 안뚱뚱해 -> 합칠거야
+						else
+						{
+							for (int i = 0; i < MIN_DEGREE-1; i++)
+							{
+								Target->Key[(MIN_DEGREE-1) + i] = Sibling->Key[i];
+							}
+							Target->N = MAX_DEGREE;
+							Target->C[Target->N] = Sibling->C[Sibling->N];
+							
+
+							for (int i = goal_idx - 1; i < ((*root)->N)-1; i++)
+							{
+								(*root)->Key[i] = (*root)->Key[i + 1];
+								(*root)->C[i + 1] = (*root)->C[i + 2];
+							}
+							(*root)->N--;
+							if ((*root)->N == 0)
+							{
+								printf("root가 바뀝니다 \n");
+								*root = Target;
+							}
+						}
+					}
+				}
+				// 자식이 안뚱뚱한데, 리프가 아니야
+				else
+				{
+
+				}
+			}
+			deleteTree(&Target, k);
+		}
+	}
+	else
+	{
+		printf("The key is not in the Tree");
 	}
 }
