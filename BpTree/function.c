@@ -19,7 +19,7 @@ Node* createNode()
 
 	newNode->C = children;
 	newNode->Key = key;
-
+	newNode->Next = NULL;
 
 	return newNode;
 }
@@ -32,6 +32,7 @@ int searchNode(Node* root, int k)
 		idx--;
 	}
 	
+	// 리프가 아니면
 	if (!root->isLeaf)
 		return searchNode(root->C[idx], k);
 
@@ -39,7 +40,7 @@ int searchNode(Node* root, int k)
 	{
 		idx--;
 		// 찾았어
-		if ((idx > 0) && k == root->Key[idx])
+		if ((idx >= 0) && k == root->Key[idx])
 			return 1;
 		// 못찾았어
 		else
@@ -52,9 +53,7 @@ int searchNode(Node* root, int k)
 void insertTree(Node** root, int k)
 {
 
-	int isIn = searchNode(*root, k);
-	if (isIn == 0)
-	{
+
 		Node* tmp = *root;
 		if (((*root)->N == MAX_DEGREE))
 		{
@@ -64,18 +63,14 @@ void insertTree(Node** root, int k)
 			to_be_root->isLeaf = false;
 			to_be_root->N = 0;
 			to_be_root->C[0] = tmp;
-			splitChild(to_be_root, 0, k);
+			splitChild(to_be_root, 0);
 			insertNonfull(to_be_root, k);
 		}
 		else
 		{
 			insertNonfull(*root, k);
 		}
-	}
-	else
-	{
-		printf("The key is alredy in the Tree\n");
-	}
+
 }
 
 
@@ -126,6 +121,7 @@ void splitChild(Node* parent, int idx)
 	if (left->isLeaf)
 	{
 
+		left->Next = right;
 
 		// 오른쪽에 왼쪽의 뒷값들을 넣어주고
 		for (int i = 0; i < MIN_DEGREE - 1; i++)
@@ -134,18 +130,10 @@ void splitChild(Node* parent, int idx)
 			right->Key[i] = left->Key[i + MIN_DEGREE];
 			// 리프와, 내부 노드 모드 C(자녀)들을 갖는다.
 		}
-		//for (int i = 0; i <= MIN_DEGREE; i++)
-		//{
-		//	right->C[i] = left->C[i + MIN_DEGREE];
-		//}
 
 		// 다음 노드를 가리키게 연결
 		right->N = MIN_DEGREE - 1;
-		right->C[right->N] = left->C[left->N];
-
 		left->N = MIN_DEGREE;
-		left->C[left->N] = right;
-
 
 
 		//(부모) 밀고, 중간자를 올리고, 자식 연결시키고
@@ -224,7 +212,7 @@ void printAll(Node* root, int depth)
 			printf("\t\t\t||");
 		}
 		for (int vIdx = 0; vIdx < node->N; vIdx++) {
-			printf("%4d", node->Key[vIdx]);
+			printf("%6d", node->Key[vIdx]);
 		}
 		for (int vIdx = 0; vIdx < node->N + 1; vIdx++) {
 			printAll(node->C[vIdx], depth + 1);
@@ -293,12 +281,13 @@ void deleteTree(Node** root, int k)
 
 						}
 						Sibling->N = Sibling->N + Target->N;
-						//free(Target);
+						free(Target);
 						Target = Sibling;
+						Target->Next = NULL;
 						(*root)->N--;
 						if ((*root)->N == 0)
 						{
-							printf("root가 바뀝니다 \n");
+							printf("\nroot가 바뀝니다 \n");
 							*root = Target;
 						}
 					}
@@ -315,7 +304,6 @@ void deleteTree(Node** root, int k)
 						Target->Key[Target->N] = (*root)->Key[goal_idx];
 						Target->N++;
 						// 끝 Child 에 Sibling 연결시켜준다.
-						Target->C[(Target->N)] = Sibling;
 
 						// 형제의 키 값 당긴다.
 						for (int i = 0; i < (Sibling->N) - 1; i++)
@@ -334,8 +322,8 @@ void deleteTree(Node** root, int k)
 							Target->Key[(Target->N) + i] = Sibling->Key[i];
 						}
 						Target->N = Target->N + Sibling->N;
-						Target->C[Target->N] = Sibling->C[Sibling->N];
-
+						Target->Next = Sibling->Next;
+						free(Sibling);
 
 						for (int i = goal_idx - 1; i < ((*root)->N) - 1; i++)
 						{
@@ -396,7 +384,7 @@ void deleteTree(Node** root, int k)
 							Sibling->C[((Sibling->N) + 1) + i] = Target->C[i];
 						}
 						Sibling->N = Sibling->N + 1 + Target->N;
-						//free(Target);
+						free(Target);
 
 						Target = Sibling;
 						(*root)->N--;
@@ -451,10 +439,12 @@ void deleteTree(Node** root, int k)
 							Target->C[((Target->N) + 1) + i] = Sibling->C[i];
 						}
 						Target->N = Target->N + 1 + Sibling->N;
-						//free(Sibling);
+						free(Sibling);
+
 
 						for (int i = goal_idx - 1; i < ((*root)->N) - 1; i++)
 						{
+
 							(*root)->Key[i] = (*root)->Key[i + 1];
 							(*root)->C[i + 1] = (*root)->C[i + 2];
 						}
