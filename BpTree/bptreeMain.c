@@ -96,28 +96,28 @@ int main()
 	for (int i = 0; i < 1000; i++)
 	{
 		val = rand();
-		val %= 1000;
+		val %= 5000;
 		flag = searchNode(root, val);
 		if (flag)
 			continue;
 		insertTree(&root, val);
 		//printf("%d %d\n", i,val);
 	}
+	printAll(root, 0);
 
-	for (int i = 0; i < 500; i++)
-	{
-		val = rand();
-		val %= 1000;
-		flag = searchNode(root, val);
-		if (flag == 0)
-			continue;
+	//for (int i = 0; i < 1000; i++)
+	//{
+	//	val = rand();
+	//	val %= 5000;
+	//	flag = searchNode(root, val);
+	//	if (flag == 0)
+	//		continue;
 
-		
-		printAll(root, 0);
-		deleteTree(&root, val);
-		//printf("%d %d\n", i, val);
+	//	
+	//	deleteTree(&root, val);
+	//	//printf("%d %d\n", i, val);
 
-	}
+	//}
 
 
 	//printAll(root, 0);

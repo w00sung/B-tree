@@ -5,7 +5,7 @@
 
 #include "bptree.h"
 
-#define DEGREE 6
+#define DEGREE 4
 
 int MIN_DEGREE = (int)((DEGREE + 1) / 2);
 int MAX_DEGREE = DEGREE - 1;
@@ -293,7 +293,7 @@ void deleteTree(Node** root, int k)
 
 						}
 						Sibling->N = Sibling->N + Target->N;
-						free(Target);
+						//free(Target);
 						Target = Sibling;
 						(*root)->N--;
 						if ((*root)->N == 0)
@@ -396,7 +396,7 @@ void deleteTree(Node** root, int k)
 							Sibling->C[((Sibling->N) + 1) + i] = Target->C[i];
 						}
 						Sibling->N = Sibling->N + 1 + Target->N;
-						free(Target);
+						//free(Target);
 
 						Target = Sibling;
 						(*root)->N--;
@@ -451,7 +451,7 @@ void deleteTree(Node** root, int k)
 							Target->C[((Target->N) + 1) + i] = Sibling->C[i];
 						}
 						Target->N = Target->N + 1 + Sibling->N;
-						free(Sibling);
+						//free(Sibling);
 
 						for (int i = goal_idx - 1; i < ((*root)->N) - 1; i++)
 						{
