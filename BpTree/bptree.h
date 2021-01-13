@@ -9,6 +9,7 @@
 
 typedef struct _NODE {
 	struct _NODE** C;
+	struct _NODE* Next;
 	int* Key;
 	int N;
 	bool isLeaf;
