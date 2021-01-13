@@ -25,7 +25,7 @@ int main()
 		int input=0;
 		int val = 0;
 		int flag = 0;
-		int isSearch = 0;
+		int issearch = 0;
 		printf("\n1.조회\t2/삽입\t3.삭제\t4.출력\t5.종료 :");
 		scanf("%d", &input);
 
@@ -33,8 +33,8 @@ int main()
 		case 1:
 			printf("값을 입력하세요 : ");
 			scanf("%d", &val);
-			isSearch = searchNode(root, val);
-			if (isSearch)
+			issearch = searchNode(root, val);
+			if (issearch)
 				printf("값이 존재합니다 !! ㅎㅎ");
 			else
 				printf("값이 존재하지 않습니다. ㅠㅠ");
@@ -70,34 +70,37 @@ int main()
 			break;
 	}
 
+	/* 랜덤 값 넣어서 디버깅 */
 
 	//int val = 0;
 	//int flag = 0;
-	//for (int i = 0; i < 3000; i++)
+	//for (int i = 0; i < 10000; i++)
 	//{
 	//	val = rand();
-	//	val %= 5000;
+	///*	val %= 100;*/
 	//	flag = searchNode(root, val);
 	//	if (flag==1)
 	//		continue;
 	//	insertTree(&root, val);
+	//	continue;
 	//	//printf("%d %d\n", i,val);
 	//}
 
-	//for (int i = 0; i < 3000; i++)
+	//for (int i = 0; i < 10000; i++)
 	//{
 	//	val = rand();
-	//	val %= 1000;
+	//	//val %= 100;
 	//	flag = searchNode(root, val);
 	//	if (flag == 0)
 	//		continue;
 	//	
 	//	deleteTree(&root, val);
+	//	continue;
 	//	//printf("%d %d\n", i, val);
 
 	//}
-	//	printAll(root, 0);
 
+	//printAll(root, 0);
 
 
 

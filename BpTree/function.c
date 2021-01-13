@@ -121,8 +121,8 @@ void splitChild(Node* parent, int idx)
 	if (left->isLeaf)
 	{
 
+		right->Next = left->Next;
 		left->Next = right;
-
 		// 오른쪽에 왼쪽의 뒷값들을 넣어주고
 		for (int i = 0; i < MIN_DEGREE - 1; i++)
 		{
@@ -205,6 +205,8 @@ void printAll(Node* root, int depth)
 		for (int vIdx = 0; vIdx < node->N; vIdx++) {
 			printf("%6d", node->Key[vIdx]);
 		}
+
+		printf("\t다음 자식은 : %p", node->Next);
 		return;
 	}
 	if (!node->isLeaf) {
@@ -287,7 +289,7 @@ void deleteTree(Node** root, int k)
 						(*root)->N--;
 						if ((*root)->N == 0)
 						{
-							printf("\nroot가 바뀝니다 \n");
+							//printf("\nroot가 바뀝니다 \n");
 							*root = Target;
 						}
 					}
@@ -323,7 +325,6 @@ void deleteTree(Node** root, int k)
 						}
 						Target->N = Target->N + Sibling->N;
 						Target->Next = Sibling->Next;
-						free(Sibling);
 
 						for (int i = goal_idx - 1; i < ((*root)->N) - 1; i++)
 						{
@@ -333,9 +334,10 @@ void deleteTree(Node** root, int k)
 						(*root)->N--;
 						if ((*root)->N == 0)
 						{
-							printf("root가 바뀝니다 \n");
+							//printf("\nroot가 바뀝니다 \n");
 							*root = Target;
 						}
+						//free(Sibling);
 					}
 				}
 			}
@@ -390,7 +392,7 @@ void deleteTree(Node** root, int k)
 						(*root)->N--;
 						if ((*root)->N == 0)
 						{
-							printf("root가 바뀝니다 \n");
+							//printf("root가 바뀝니다 \n");
 							*root = Target;
 						}
 					}
@@ -439,7 +441,6 @@ void deleteTree(Node** root, int k)
 							Target->C[((Target->N) + 1) + i] = Sibling->C[i];
 						}
 						Target->N = Target->N + 1 + Sibling->N;
-						free(Sibling);
 
 
 						for (int i = goal_idx - 1; i < ((*root)->N) - 1; i++)
@@ -451,9 +452,10 @@ void deleteTree(Node** root, int k)
 						(*root)->N--;
 						if ((*root)->N == 0)
 						{
-							printf("root가 바뀝니다 \n");
+							//printf("root가 바뀝니다 \n");
 							*root = Target;
 						}
+						//free(Sibling);
 						
 					}
 				}
