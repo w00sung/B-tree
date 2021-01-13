@@ -3,11 +3,11 @@
 #include <stdbool.h>
 #include <math.h>
 
-#include "insertion.h"
+#include "header.h"
 
 
-// 차수가 짝수가 들어간다고 가정
-#define DEGREE 4
+// 차수가 짝수가 들어간다
+#define DEGREE 8
 
 int MIN_DEGREE = (int)((DEGREE + 1) / 2);
 int MAX_DEGREE = DEGREE - 1;
@@ -15,7 +15,7 @@ int MAX_DEGREE = DEGREE - 1;
 Node* createNode()
 {
 	Node* newNode = (Node*)malloc(sizeof(Node));
-	//int min_degree = ceil(DEGREE/2);
+	//int MIN_DEGREE = ceil(DEGREE/2);
 	// 주소를 담고 있는 녀석들을 배열화 할 것이기 때문에 이중포인터
 	// ex_ int 배열을 담기 위해서는 int *을 사용한다.
 	Node** children = (Node**)malloc((DEGREE + 1) * sizeof(Node*));
@@ -42,7 +42,7 @@ int searchNode(Node* root, int k)
 		idx++;
 
 	// 찾았으면?
-	if ((idx < root->N) && (k = root->Key[idx]))
+	if ((idx < root->N) && (k == root->Key[idx]))
 	{
 		return 1;
 	}
@@ -62,9 +62,8 @@ int searchNode(Node* root, int k)
 
 void insertTree(Node** root, int k)
 {
-	int max_degree = (int)2 * ceil(DEGREE / 2) - 1;
 	Node* tmp = *root;
-	if (((*root)->N == max_degree))
+	if (((*root)->N == MAX_DEGREE))
 	{
 		// 루트가 될 노드 생성
 		Node* to_be_root = createNode();
@@ -83,24 +82,24 @@ void insertTree(Node** root, int k)
 
 void splitChild(Node* parent, int idx)
 {
-	int min_degree = (int)ceil(DEGREE / 2);
+
 	Node* right = createNode();
 	Node* left = parent->C[idx];
 	right->isLeaf = left->isLeaf;
-	right->N = min_degree - 1;
-	for (int i = 0; i < min_degree - 1; i++)
+	right->N = MIN_DEGREE - 1;
+	for (int i = 0; i < MIN_DEGREE - 1; i++)
 	{
 		// 왼쪽이 뚱뚱해짐
-		right->Key[i] = left->Key[i + min_degree];
+		right->Key[i] = left->Key[i + MIN_DEGREE];
 	}
 	if (!left->isLeaf)
 	{
-		for (int i = 0; i < min_degree; i++)
+		for (int i = 0; i < MIN_DEGREE; i++)
 		{
-			right->C[i] = left->C[i + min_degree];
+			right->C[i] = left->C[i + MIN_DEGREE];
 		}
 	}
-	left->N = min_degree - 1;
+	left->N = MIN_DEGREE - 1;
 	// 자식 올라갈 녀석 자리 마련
 	for (int i = parent->N; i >= idx + 1; i--)
 	{
@@ -113,13 +112,12 @@ void splitChild(Node* parent, int idx)
 		parent->Key[i + 1] = parent->Key[i];
 	}
 	// 부모에 키 삽입
-	parent->Key[idx] = left->Key[min_degree - 1];
+	parent->Key[idx] = left->Key[MIN_DEGREE - 1];
 	parent->N++;
 }
 
 void insertNonfull(Node* root, int k)
 {
-	int max_degree = (int)2 * ceil(DEGREE / 2) - 1;
 	int num = (root->N) - 1;
 	if (root->isLeaf)
 	{
@@ -141,7 +139,7 @@ void insertNonfull(Node* root, int k)
 		num++;
 
 		// 내가 들어갈 자녀들이 가득 찼으면
-		if (root->C[num]->N == max_degree)
+		if (root->C[num]->N == MAX_DEGREE)
 		{
 			splitChild(root, num);
 			// split 후 root에 값이 추가되니까 내가 어디로 들어갈 지 다시 확인
@@ -179,16 +177,10 @@ void deleteTree(Node** root_address, Node* root, int k)
 			//YES
 			if (root->isLeaf)
 			{
-				printf("리프에서 키 땡기기\n");
 				// 땡기기
 				for (int i = goal_idx; i < (root->N) - 1; i++)
 				{
-					printf("시작 %d <- %d\n", root->Key[i], root->Key[i + 1]);
-
 					root->Key[i] = root->Key[i + 1];
-
-					printf("종료 %d 가 왼쪽으로 옮겨짐\n", root->Key[i]);
-
 				}
 				// 너는 루트 변환 필요없어
 				root->N--;
@@ -205,9 +197,7 @@ void deleteTree(Node** root_address, Node* root, int k)
 				if (Left->N >= MIN_DEGREE)
 				{
 					int tmp = Left->Key[num_left - 1];
-					printf("재귀 delete 출발 LEFT, %d\n", tmp);
 					deleteTree(&Left, Left, tmp);
-					printf("재귀 delete 끝 LEFT, %d\n", tmp);
 					root->Key[goal_idx] = tmp;
 
 				}
@@ -217,9 +207,7 @@ void deleteTree(Node** root_address, Node* root, int k)
 				{
 					//int num_right = Right->N;
 					int tmp = Right->Key[0];
-					printf("재귀 delete 출발 Right, %d\n", tmp);
 					deleteTree(&Right, Right, tmp);
-					printf("재귀 delete 끝 Right, %d\n", tmp);
 					root->Key[goal_idx] = tmp;
 				}
 
@@ -230,7 +218,6 @@ void deleteTree(Node** root_address, Node* root, int k)
 
 					// 왼쪽 자식에 나와 오른쪽 자식 합치기
 					Left->Key[num_left] = k;
-					printf("둘다 t-1이어서, 왼쪽에 %d값 넣었어요\n", Left->Key[num_left]);
 					for (int i = 0; i < num_right; i++)
 					{
 						Left->Key[(num_left + 1) + i] = Right->Key[i];
@@ -258,17 +245,14 @@ void deleteTree(Node** root_address, Node* root, int k)
 
 					if (root->N == 0)
 					{
-						printf("root 가 바뀝니다.\n");
 						*root_address = Left;
 					}
 
 					// 땡기기 + 합치기 완료 //
 
 					// 재귀 삭제
-					printf("둘다 t-1, 왼쪽에 k(==%d) 넣고 재귀 삭제 시작!\n", Left->Key[num_left]);
 
 					deleteTree(&Left, Left, k);
-					printf("둘다 t-1, 왼쪽에 k 넣고 재귀 삭제 완료해서 그 자리에 %d로 대체됨\n", Left->Key[num_left]);
 
 				}
 
@@ -377,7 +361,6 @@ void deleteTree(Node** root_address, Node* root, int k)
 						// root 가 빈다면? 
 						if (root->N == 0)
 						{
-							printf("root 가 바뀝니다.\n");
 							*root_address = Target_Left;
 						}
 
@@ -421,7 +404,6 @@ void deleteTree(Node** root_address, Node* root, int k)
 						root->N--;
 						if (root->N == 0)
 						{
-							printf("root 가 바뀝니다.\n");
 							*root_address = Target;
 						}
 
@@ -446,6 +428,52 @@ void deleteTree(Node** root_address, Node* root, int k)
 	}
 	else
 	{
-		printf("The key is not in the Tree");
+		//printf("The key is not in the Tree");
+	}
+}
+// 노드 자식 출력하기(?)
+//void printAll(Node* root, int depth)
+//{
+//	
+//	// depth만큼 구문
+//	for (int i = 0; i < depth; i++)
+//	{
+//		printf("\t");
+//	}
+//	
+//	for (int i = 0; i <= root -> N; i++)
+//	{
+//		if (root->C[i]->N != 0)
+//		{
+//			printf("%d\n", root->Key[i]);
+//			printAll(root->C[i]);
+//			printf("\n");
+//		}
+//	}
+//	
+//}
+void printAll(Node* root, int depth)
+{
+	printf("\n");
+	Node* node = root;
+	if (node->isLeaf) {
+		for (int i = 0; i < depth; i++) {
+			printf("\t\t\t||");
+		}
+		for (int vIdx = 0; vIdx < node->N; vIdx++) {
+			printf("%6d", node->Key[vIdx]);
+		}
+		return;
+	}
+	if (!node->isLeaf) {
+		for (int i = 0; i < depth; i++) {
+			printf("\t\t\t||");
+		}
+		for (int vIdx = 0; vIdx < node->N; vIdx++) {
+			printf("%6d", node->Key[vIdx]);
+		}
+		for (int vIdx = 0; vIdx < node->N + 1; vIdx++) {
+			printAll(node->C[vIdx], depth + 1);
+		}
 	}
 }
