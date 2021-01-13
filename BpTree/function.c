@@ -31,27 +31,21 @@ int searchNode(Node* root, int k)
 	{
 		idx--;
 	}
-	// 너 리프니?
-	if (root->isLeaf)
-		idx--;
+	
+	if (!root->isLeaf)
+		return searchNode(root->C[idx], k);
 
-	// 찾았으면? - 리프가 아닐 때만, N에 서있을 수 있다.
-	// 리프에서만 찾을 수 있다.
-	if ((idx < root->N) && (k == root->Key[idx]))
-	{
-		return 1;
-	}
-	// 몿찾았고, 리프야
-	else if (root->isLeaf)
-	{
-		// 못찾으면 NULL
-		return 0;
-	}
-	// 못찾았고, 리프 아니야
 	else
 	{
-		return searchNode(root->C[idx], k);
+		idx--;
+		// 찾았어
+		if ((idx > 0) && k == root->Key[idx])
+			return 1;
+		// 못찾았어
+		else
+			return 0;
 	}
+	
 }
 
 
@@ -368,11 +362,49 @@ void deleteTree(Node** root, int k)
 					if (Sibling->N >= MIN_DEGREE)
 					{
 						// 빌릴거야
+						// Target 키 뒤로 밀기
+						for (int i = Target->N; i >0; i--)
+						{
+							Target->Key[i] = Target->Key[i - 1];
+
+						}
+						// Target 자식들 밀기
+						for (int i = Target->N; i >= 0; i--)
+						{
+							Target->C[i + 1] = Target->C[i];
+						}
+						Target->Key[0] = (*root)->Key[goal_idx - 1];
+						(*root)->Key[goal_idx - 1] = Sibling->Key[(Sibling->N) - 1];
+						Target->C[0] = Sibling->C[Sibling->N];
+						Sibling->N--;
+						Target->N++;
+
+
 					}
 					// 형제 안뚱뚱해
 					else
 					{
 						// 합칠거야
+						Sibling->Key[Sibling->N] = (*root)->Key[goal_idx-1];
+						// Target의 값을 Sibling 에 복사할거야
+						for (int i = 0; i < Target->N; i++)
+						{
+							Sibling->Key[((Sibling->N) + 1) + i] = Target->Key[i];
+						}
+						for (int i = 0; i <= Target->N; i++)
+						{
+							Sibling->C[((Sibling->N) + 1) + i] = Target->C[i];
+						}
+						Sibling->N = Sibling->N + 1 + Target->N;
+						free(Target);
+
+						Target = Sibling;
+						(*root)->N--;
+						if ((*root)->N == 0)
+						{
+							printf("root가 바뀝니다 \n");
+							*root = Target;
+						}
 					}
 				}
 				// 그 외
@@ -407,7 +439,8 @@ void deleteTree(Node** root, int k)
 					{
 						// 합칠거야
 						// 리프가 아니면 부모도 넣을거야
-						Target->Key[Target->N] = (*root)->Key[goal_idx-1];
+						// 오른쪽 형제와 합칠 때, 부모를 내리면 그 부모는 goal_idx에 있다.
+						Target->Key[Target->N] = (*root)->Key[goal_idx];
 						for (int i = 0; i < Sibling->N; i++)
 						{
 							Target->Key[((Target->N) + 1) + i] = Sibling->Key[i];
@@ -418,6 +451,7 @@ void deleteTree(Node** root, int k)
 							Target->C[((Target->N) + 1) + i] = Sibling->C[i];
 						}
 						Target->N = Target->N + 1 + Sibling->N;
+						free(Sibling);
 
 						for (int i = goal_idx - 1; i < ((*root)->N) - 1; i++)
 						{

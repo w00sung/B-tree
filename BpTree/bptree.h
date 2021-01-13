@@ -20,5 +20,5 @@ Node* createNode();
 void insertTree(Node** root, int k);
 void insertNonfull(Node* root, int k);
 void splitChild(Node* parent, int idx);
-void deleteTree(Node** root_address, Node* root, int k);
+void deleteTree(Node** root, int k);
 void printAll(Node* root, int depth);

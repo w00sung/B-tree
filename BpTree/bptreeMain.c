@@ -46,6 +46,7 @@ int main()
 	//		break;
 	//	case 3:
 	//		printf("값을 입력하세요 : ");
+	//		
 	//		/*deleteTree(&root, val);*/
 	//		scanf("%d", &val);
 	//		break;
@@ -64,27 +65,80 @@ int main()
 	//}
 
 	/* Samsung Note 예제 */
-	insertTree(&root, 10);
-	insertTree(&root, 20);
-	insertTree(&root, 30);
-	insertTree(&root, 40);
-	insertTree(&root, 50);
-	insertTree(&root, 60);
-	insertTree(&root, 70);
-	insertTree(&root, 80);
-	insertTree(&root, 0);
-	insertTree(&root, 15);
-	insertTree(&root, 5);
-	insertTree(&root, 7);
-	insertTree(&root, 45);
+	//insertTree(&root, 10);
+	//insertTree(&root, 20);
+	//insertTree(&root, 30);
+	//insertTree(&root, 40);
+	//insertTree(&root, 50);
+	//insertTree(&root, 60);
+	//insertTree(&root, 70);
+	//insertTree(&root, 80);
+	//insertTree(&root, 0);
+	//insertTree(&root, 15);
+	//insertTree(&root, 5);
+	//insertTree(&root, 7);
+	//insertTree(&root, 45);
 	//insertTree(&root, 35);
 	//insertTree(&root, 32);
 	//insertTree(&root, 31);
-	//insertTree(&root, 33);
+	//insertTree(&root, 100);
+	//insertTree(&root, 110);
+	//insertTree(&root, 120);
+	//insertTree(&root, 130);
+	//insertTree(&root, 140);
+	//insertTree(&root, 150);
+	//insertTree(&root, 160);
+	//insertTree(&root, 170);
+	//deleteTree(&root, 140);
+
+	int val = 0;
+	int flag = 0;
+	for (int i = 0; i < 1000; i++)
+	{
+		val = rand();
+		val %= 1000;
+		flag = searchNode(root, val);
+		if (flag)
+			continue;
+		insertTree(&root, val);
+		//printf("%d %d\n", i,val);
+	}
+
+	for (int i = 0; i < 500; i++)
+	{
+		val = rand();
+		val %= 1000;
+		flag = searchNode(root, val);
+		if (flag == 0)
+			continue;
+
+		
+		printAll(root, 0);
+		deleteTree(&root, val);
+		//printf("%d %d\n", i, val);
+
+	}
+
+
+	//printAll(root, 0);
+
+	/* 삭제 예제 */
+
+	/* root 지우기 */
+	//insertTree(&root, 10);
+	//insertTree(&root, 20);
+	//insertTree(&root, 30);
+	//insertTree(&root, 50);
+	//insertTree(&root, 60);
+	//insertTree(&root, 70);
+	//deleteTree(&root, 70);
+	//deleteTree(&root, 60);
+
+	//deleteTree(&root, 20);
 
 
 
-	printAll(root, 0);
+
 
 
 
