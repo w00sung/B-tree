@@ -277,7 +277,38 @@ void deleteTree(Node** root, int k)
 					// 오른쪽 끝에 서있으면, 무조건 왼쪽 형제가 형제다.
 					if (goal_idx == (*root)->N)
 					{
+						// 빌려온다 -> 끝값을 빌려오고, 부모를 업데이트 해줘야함
 						Node* Sibling = (*root)->C[goal_idx - 1];
+						if (Sibling->N >= MIN_DEGREE)
+						{
+							for (int i = Target->N; i >0; i--)
+							{
+								Target->Key[i] = Target->Key[i-1];
+							}
+							Target->Key[0] = Sibling->Key[(Sibling->N) - 1];
+							Target->N++;
+							Sibling->N--;
+
+							(*root)->Key[goal_idx - 1] = Target->Key[0];
+						}
+						else
+						{
+							// 합친다.
+							for (int i = 0; i < Target->N; i++)
+							{
+								Sibling->Key[(Sibling->N)+i] = Target->Key[i];
+
+							}
+							Sibling->N = Sibling->N + Target->N;
+							free(Target);
+							Target = Sibling;
+							(*root)->N--;
+							if ((*root)->N == 0)
+							{
+								printf("root가 바뀝니다 \n");
+								*root = Target;
+							}
+						}
 
 					}
 
@@ -309,7 +340,7 @@ void deleteTree(Node** root, int k)
 							{
 								Target->Key[(MIN_DEGREE-1) + i] = Sibling->Key[i];
 							}
-							Target->N = MAX_DEGREE;
+							Target->N = Target->N + Sibling->N;
 							Target->C[Target->N] = Sibling->C[Sibling->N];
 							
 
